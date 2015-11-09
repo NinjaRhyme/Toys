@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">toys</string>
+    <string name="app_name">Toys</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_nbody">NBodyActivity</string>
+    <string name="title_activity_volley">VolleyActivity</string>
 </resources>

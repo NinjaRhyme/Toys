@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="ninja.toys" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ninja.toys" >
 
     <!-- permission -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,6 +18,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".NBodyActivity"
+            android:label="@string/title_activity_nbody" >
+        </activity>
+        <activity
+            android:name=".VolleyActivity"
+            android:label="@string/title_activity_volley" >
         </activity>
     </application>
 

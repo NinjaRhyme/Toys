@@ -1,32 +1,24 @@
 package ninja.toys;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity {
-
-    //----------------------------------------------------------------------------------------------------
+public class NBodyActivity extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Intent nBody = new Intent(MainActivity.this, NBodyActivity.class);
-        startActivityForResult(nBody, 0);
-
-
+        setContentView(R.layout.activity_nbody);
     }
 
     //----------------------------------------------------------------------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_nbody, menu);
 
         return true;
     }
