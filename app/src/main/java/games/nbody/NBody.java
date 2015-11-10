@@ -1,0 +1,157 @@
+package games.nbody;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+
+
+// F = G * M * m / r ^ 2
+// G = 6.67259 * 10 ^ -11 (N * m ^ 2 / kg ^ 2)
+//----------------------------------------------------------------------------------------------------
+public class NBody extends View implements View.OnTouchListener, GestureDetector.OnGestureListener {
+
+    //----------------------------------------------------------------------------------------------------
+    protected class Body {
+        //----------------------------------------------------------------------------------------------------
+        public float x;
+        public float y;
+        public float mass;
+        public float velocity;
+
+        //----------------------------------------------------------------------------------------------------
+        public Body(float _x, float _y) {
+            x = _x;
+            y = _y;
+            mass = 1.f;
+            velocity = 0.f;
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    private GestureDetector m_gestureDetector;
+    private Paint m_paint = new Paint();
+    private float m_offsetX = 0.f;
+    private float m_offsetY = 0.f;
+    private ArrayList<Body> m_bodies = new ArrayList<>();
+
+    //----------------------------------------------------------------------------------------------------
+    public NBody(Context context) {
+        super(context);
+        initialize(context);
+    }
+
+    public NBody(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initialize(context);
+    }
+
+    public NBody(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initialize(context);
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    boolean initialize(Context context) {
+        setOnTouchListener(this);
+        m_gestureDetector = new GestureDetector(context, this);
+
+        m_paint.setAntiAlias(true);
+
+        return true;
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    @Override
+    protected void onDraw(Canvas canvas) {
+        // super.onDraw(canvas);
+
+        drawFrame(canvas);
+        drawBodies(canvas);
+    }
+
+    protected void drawFrame(Canvas canvas) {
+        canvas.translate(m_offsetX, m_offsetY);
+        canvas.drawColor(0xFF333333);
+
+        m_paint.setColor(0xF2F2F2F2);
+        m_paint.setStyle(Paint.Style.STROKE);
+        m_paint.setStrokeWidth(4);
+        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, canvas.getWidth() * 2 / 5, m_paint);
+        // canvas.drawArc(new RectF(200, 200, 500, 500), 0, 360, false, m_paint);
+    }
+
+    protected void drawBodies(Canvas canvas) {
+        for(int i = 0; i < m_bodies.size(); ++i){
+            m_paint.setColor(0xFFB1CB4E);
+            m_paint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(m_bodies.get(i).x, m_bodies.get(i).y, 10, m_paint);
+        }
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return m_gestureDetector.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        m_bodies.add(new Body(e.getX() - m_offsetX, e.getY() - m_offsetY));
+
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        m_offsetX -= distanceX;
+        m_offsetY -= distanceY;
+
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                break;
+
+            case MotionEvent.ACTION_UP:
+                break;
+
+            default:
+                break;
+        }
+        invalidate();
+
+        return true;
+    }
+}

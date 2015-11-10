@@ -21,7 +21,7 @@
 
         </LinearLayout>
 
-        <games.NBody
+        <games.nbody.NBody
             android:id="@+id/nBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
