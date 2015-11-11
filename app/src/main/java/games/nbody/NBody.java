@@ -3,8 +3,8 @@ package games.nbody;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,21 +23,27 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
         //----------------------------------------------------------------------------------------------------
         public float x;
         public float y;
+        public float radius;
         public float mass;
-        public float velocity;
+        public float velocityX;
+        public float velocityY;
 
         //----------------------------------------------------------------------------------------------------
         public Body(float _x, float _y) {
             x = _x;
             y = _y;
+            radius = 1.f;
             mass = 1.f;
-            velocity = 0.f;
+            velocityX = 0.f;
+            velocityY = 0.f;
         }
     }
 
     //----------------------------------------------------------------------------------------------------
     private GestureDetector m_gestureDetector;
     private Paint m_paint = new Paint();
+    private Handler m_handler = new Handler();
+    private long m_currentTime;
     private float m_offsetX = 0.f;
     private float m_offsetY = 0.f;
     private ArrayList<Body> m_bodies = new ArrayList<>();
@@ -65,9 +71,22 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
         m_paint.setAntiAlias(true);
 
+        Runnable task = new Runnable() {
+            public void run() {
+                // run
+                long deltaTime = System.currentTimeMillis() - m_currentTime;
+
+                invalidate();
+                m_handler.postDelayed(this, 16); // X
+            }
+        };
+        m_currentTime = System.currentTimeMillis();
+        m_handler.post(task);
+
         return true;
     }
 
+    // Draw
     //----------------------------------------------------------------------------------------------------
     @Override
     protected void onDraw(Canvas canvas) {
@@ -92,10 +111,11 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
         for(int i = 0; i < m_bodies.size(); ++i){
             m_paint.setColor(0xFFB1CB4E);
             m_paint.setStyle(Paint.Style.FILL);
-            canvas.drawCircle(m_bodies.get(i).x, m_bodies.get(i).y, 10, m_paint);
+            canvas.drawCircle(m_bodies.get(i).x, m_bodies.get(i).y, m_bodies.get(i).radius, m_paint);
         }
     }
 
+    // Touch
     //----------------------------------------------------------------------------------------------------
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -150,7 +170,7 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
             default:
                 break;
         }
-        invalidate();
+        //invalidate();
 
         return true;
     }
