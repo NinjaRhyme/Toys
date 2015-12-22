@@ -32,11 +32,18 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
         public Body(float _x, float _y) {
             x = _x;
             y = _y;
-            radius = 1.f;
+            radius = 5.f;
             mass = 1.f;
             velocityX = 0.f;
             velocityY = 0.f;
         }
+
+        //----------------------------------------------------------------------------------------------------
+        public void update(long _deltaTime) {
+            x += velocityX * _deltaTime;
+            y += velocityY * _deltaTime;
+        }
+
     }
 
     //----------------------------------------------------------------------------------------------------
@@ -47,6 +54,7 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     private float m_offsetX = 0.f;
     private float m_offsetY = 0.f;
     private ArrayList<Body> m_bodies = new ArrayList<>();
+    private int m_mode;
 
     //----------------------------------------------------------------------------------------------------
     public NBody(Context context) {
@@ -73,11 +81,16 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
         Runnable task = new Runnable() {
             public void run() {
-                // run
                 long deltaTime = System.currentTimeMillis() - m_currentTime;
+                m_currentTime += deltaTime;
 
+                for (Body body : m_bodies) {
+                    body.update(deltaTime);
+                }
                 invalidate();
-                m_handler.postDelayed(this, 16); // X
+
+                deltaTime += System.currentTimeMillis() - m_currentTime;
+                m_handler.postDelayed(this, deltaTime - 16 > 0 ? deltaTime - 16 : 0);
             }
         };
         m_currentTime = System.currentTimeMillis();
@@ -124,7 +137,6 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
     @Override
     public boolean onDown(MotionEvent e) {
-        m_bodies.add(new Body(e.getX() - m_offsetX, e.getY() - m_offsetY));
 
         return false;
     }
@@ -135,11 +147,18 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        m_bodies.add(new Body(e.getX() - m_offsetX, e.getY() - m_offsetY));
+
         return false;
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        Body body = new Body(e1.getX() - m_offsetX, e1.getY() - m_offsetY);
+        body.velocityX = velocityX / 3000;
+        body.velocityY = velocityY / 3000;
+        m_bodies.add(body);
+
         return false;
     }
 
@@ -149,29 +168,14 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        m_offsetX -= distanceX;
-        m_offsetY -= distanceY;
+        //m_offsetX -= distanceX;
+        //m_offsetY -= distanceY;
 
         return false;
     }
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                break;
-
-            case MotionEvent.ACTION_UP:
-                break;
-
-            default:
-                break;
-        }
-        //invalidate();
-
         return true;
     }
 }
