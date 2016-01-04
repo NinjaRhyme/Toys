@@ -8,18 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
+        <Button
+            android:id="@+id/button_mode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Count"
-                android:id="@+id/textView2" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonStyleSmall"
+            android:text="Mode"
+            android:layout_gravity="end" />
 
         <games.nbody.NBody
             android:id="@+id/nBody"
