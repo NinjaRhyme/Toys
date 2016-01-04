@@ -6,13 +6,13 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
+//import android.view.ScaleGestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-//import java.lang.Math;
 
 
 // F = G * M * m / r ^ 2
@@ -60,9 +60,8 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
                         accelerationX +=  (body.x - x) / distance * acceleration;
                         accelerationY +=  (body.y - y) / distance * acceleration;
                     } else {
-                        // Todo
-                        isAlive = false;
-                        body.isAlive = false;
+                        body.absorb(this);
+                        break;
                     }
                 }
             }
@@ -83,6 +82,18 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
             float distanceY = body.y - y;
 
             return (float)Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        public void absorb(Body body) {
+            x = x + (body.x - x) * (body.mass / (mass + body.mass));
+            y = y + (body.y - y) * (body.mass / (mass + body.mass));
+            velocityX = (velocityX * mass + body.velocityX * body.mass) / (mass + body.mass);
+            velocityY = (velocityY * mass + body.velocityY * body.mass) / (mass + body.mass);
+            mass = mass + body.mass;
+            radius = (float)Math.sqrt(radius * radius + body.radius * body.radius);
+
+            body.isAlive = false;
         }
     }
 
@@ -248,6 +259,25 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
 
         return false;
     }
+
+    /*
+    @Override
+    public boolean onScale(ScaleGestureDetector detector) {
+
+        return true;
+    }
+
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
+
+        return true;
+    }
+
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector) {
+
+    }
+    */
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
