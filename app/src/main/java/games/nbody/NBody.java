@@ -111,6 +111,7 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     //private float intervalTime = 0.01f;
     private float m_offsetX = 0.f;
     private float m_offsetY = 0.f;
+    private float m_scanningPos = 0.f;
     private ArrayList<Body> m_bodies = new ArrayList<>();
     private NBodyMode m_mode = NBodyMode.NBODY_MODE_VIEW;
 
@@ -145,8 +146,8 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     //----------------------------------------------------------------------------------------------------
     boolean initialize(Context context) {
         setOnTouchListener(this);
-        m_gestureDetector = new GestureDetector(context, this);
 
+        m_gestureDetector = new GestureDetector(context, this);
         m_paint.setAntiAlias(true);
 
         Runnable task = new Runnable() {
@@ -190,14 +191,30 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     }
 
     protected void drawFrame(Canvas canvas) {
-        canvas.translate(m_offsetX, m_offsetY);
+        canvas.translate(-m_offsetX, -m_offsetY);
         canvas.drawColor(0xFF333333);
 
         m_paint.setColor(0xF2F2F2F2);
         m_paint.setStyle(Paint.Style.STROKE);
-        m_paint.setStrokeWidth(4);
-        canvas.drawCircle(canvas.getWidth() / 2, canvas.getHeight() / 2, canvas.getWidth() * 2 / 5, m_paint);
-        // canvas.drawArc(new RectF(200, 200, 500, 500), 0, 360, false, m_paint);
+        m_paint.setStrokeWidth(2);
+
+        canvas.drawLine(0.f, m_offsetY, 0.f, m_offsetY + canvas.getHeight(), m_paint);
+        canvas.drawLine(m_offsetX, 0.f, m_offsetX + canvas.getWidth(), 0.f, m_paint);
+        float x = Math.abs(m_offsetX) < Math.abs(m_offsetX + canvas.getWidth()) ? m_offsetX + canvas.getWidth() : m_offsetX;
+        float y = Math.abs(m_offsetY) < Math.abs(m_offsetY + canvas.getHeight()) ? m_offsetY + canvas.getHeight() : m_offsetY;
+        float radius = (float)Math.sqrt(x * x + y * y);
+        if (radius < m_scanningPos) {
+            if (-canvas.getWidth() <= m_offsetX && m_offsetX <= canvas.getWidth() && -canvas.getHeight() <= m_offsetY && m_offsetY <= canvas.getHeight()) {
+                m_scanningPos = 0.f;
+            }
+            else {
+                x = Math.abs(m_offsetX) < Math.abs(m_offsetX + canvas.getWidth()) ? m_offsetX : m_offsetX + canvas.getWidth();
+                y = Math.abs(m_offsetY) < Math.abs(m_offsetY + canvas.getHeight()) ? m_offsetY : m_offsetY + canvas.getHeight();
+                radius = (float) Math.sqrt(x * x + y * y);
+                m_scanningPos = radius;
+            }
+        }
+        canvas.drawCircle(0.f, 0.f, m_scanningPos += 3, m_paint); // Todo: 3 -> speed
     }
 
     protected void drawBodies(Canvas canvas) {
@@ -228,7 +245,7 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         if (m_mode == NBodyMode.NBODY_MODE_ACTION) {
-            m_bodies.add(new Body(e.getX() - m_offsetX, e.getY() - m_offsetY));
+            m_bodies.add(new Body(e.getX() + m_offsetX, e.getY() + m_offsetY));
         }
 
         return false;
@@ -237,7 +254,7 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         if (m_mode == NBodyMode.NBODY_MODE_ACTION) {
-            Body body = new Body(e1.getX() - m_offsetX, e1.getY() - m_offsetY);
+            Body body = new Body(e1.getX() + m_offsetX, e1.getY() + m_offsetY);
             body.velocityX = velocityX / 3000;
             body.velocityY = velocityY / 3000;
             m_bodies.add(body);
@@ -253,8 +270,8 @@ public class NBody extends View implements View.OnTouchListener, GestureDetector
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (m_mode == NBodyMode.NBODY_MODE_VIEW) {
-            m_offsetX -= distanceX;
-            m_offsetY -= distanceY;
+            m_offsetX += distanceX;
+            m_offsetY += distanceY;
         }
 
         return false;
